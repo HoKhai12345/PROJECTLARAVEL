@@ -1,14 +1,24 @@
 <?php
 namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendWelcomeEmail;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\News\NewsRepositoryInterface;
 use App\Product;
 use App\News;
 use App\Repositories\News\NewsRepository;
+use App\User;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\Cast\Object_;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Validator;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
+use Carbon\Carbon;
+
+
+
 
 class NewsController extends Controller
 {
@@ -41,7 +51,12 @@ class NewsController extends Controller
         $offset = isset($_GET["offset"])?$_GET["offset"]:0 ;
         $keyword = isset($_GET["keyword"])?$_GET["keyword"]:"" ;
         $products = $this->newsModel->getPostByCategoryId($categoryId, $limit , $offset ,$keyword);
+//        $user = Redis::set('post_' + 'categoryId'    , json_encode($products));
 //        $products = $this->news->getNews();
+        Cache::put('key', $products, 2);
+        $value = Cache::get('key');
+        Cache::increment('key2', 2);
+        dd($value);
         return response()->json([
             "success" => true,
             "err" => 0,
@@ -209,5 +224,17 @@ class NewsController extends Controller
             "message" => "Product deleted successfully.",
             "data" => $product
         ]);
+    }
+
+    public function create(Request $request)
+    {
+        $user = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => bcrypt($request['password']),
+        ]);
+        $job = (new SendWelcomeEmail($user))->delay(Carbon::now()->addMinutes(10));
+        dispatch($job);
+        return $user;
     }
 }

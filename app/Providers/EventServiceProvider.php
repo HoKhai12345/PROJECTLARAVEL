@@ -15,9 +15,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
-        ],
+
+        'App\Events\OrderShipped' => [
+            'App\Listeners\SendShipmentNotification',
+        ]
     ];
 
     /**
@@ -29,6 +30,13 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        //
+        Event::listen('event.name', function ($foo, $bar) {
+            //
+        });
+    }
+
+    public function shouldDiscoverEvents()
+    {
+        return true;
     }
 }

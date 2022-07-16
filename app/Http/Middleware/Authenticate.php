@@ -15,7 +15,8 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route("http://127.0.0.1:8000/");
+           return route("http://laraveldemo.io/");
+
         }
     }
 }
