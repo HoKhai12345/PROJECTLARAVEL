@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\PostCreated;
+use App\Listeners\NotifyAdmin;
+use App\Listeners\NotifyUser;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,7 +21,12 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\OrderShipped' => [
             'App\Listeners\SendShipmentNotification',
+        ],
+        PostCreated::class=>[
+            NotifyUser::class,
+            NotifyAdmin::class
         ]
+
     ];
 
     /**

@@ -33,7 +33,8 @@ Route::get('/count/lineFile' , function (){
 });
 Route::post('/message/{limit}' , [RedisController::class , 'sendMessage']);
 Route::get('/order/{orderId}' , [OrderController::class, 'ship']);
-
+Route::get('/dashboard' , [\App\Http\Controllers\PostController::class , 'formAdd'])->middleware('auth');
+Route::post('/dashboard' , [\App\Http\Controllers\PostController::class , 'store'])->middleware('auth');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

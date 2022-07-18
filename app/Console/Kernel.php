@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Date;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,10 +16,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        DB::table('test')->insert(["time"=>date("Y-m-d h:i:s")]);
         $schedule->command('email:send')
             ->everyMinute();
     }
-
+//    protected function schedule(Schedule $schedule)
+//    {
+//        $schedule->call(function () {
+//            DB::table('recent_users')->delete();
+//        })->daily();
+//    }
     /**
      * Register the commands for the application.
      *
